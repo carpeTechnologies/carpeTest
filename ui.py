@@ -1,7 +1,7 @@
 import tkinter as tk
 
 class LaunchScreen:
-    def __init__(self, root, onSubmit=None):
+    def __init__(self, root, submit_callback):
         self.root = root
         self.root.title("Launch Screen")
 
@@ -19,19 +19,17 @@ class LaunchScreen:
         submit_button = tk.Button(root, text="Submit", command=self.submit)
         submit_button.pack()
 
+        # Store the callback function
+        self.submit_callback = submit_callback
+
     def submit(self):
         # Get input values and store them in variables
         field_values = [field.get() for field in self.fields]
-        self.root.destroy()  # Close the launch screen window
-        # self.root.quit()  # Quit the main loop
-        print(field_values)
-        return field_values
+        # Call the submit callback function with the field values
+        self.submit_callback(field_values)
+        # Close the launch screen window
+        self.root.destroy()
 
-    def launch():
-        root = tk.Tk()
-        app = LaunchScreen(root)
-        root.mainloop()
-        return app.submit()
 
 class TabApp:
     def __init__(self, root, orders):
@@ -97,8 +95,8 @@ class TabApp:
             new_width = self.header_frame.winfo_width() // len(self.tabs)
             
             # Update the width of the remaining tab buttons
-            for button, _ in self.tabs:
-                button.config(width=new_width)
+            # for button, _ in self.tabs:
+            #     button.config(width=new_width)
             
             # Show the next tab, if available
             next_index = self.current_tab_index % len(self.tabs)

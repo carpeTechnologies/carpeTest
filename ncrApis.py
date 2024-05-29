@@ -190,12 +190,8 @@ def process_field_values(field_values):
 
 def main():
     root = tk.Tk()
-    launch_screen = LaunchScreen(root, onSubmit = process_field_values)
-    # app = TabApp(root, orders)
+    launch_screen = LaunchScreen(root, submit_callback=process_field_values)
     root.mainloop()
-    return
 
 if __name__ == "__main__":
-    
-
     main()
