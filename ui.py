@@ -38,8 +38,9 @@ class TabApp:
         self.root.title("Dynamic Orders Tabs Example")
         
         # Set a fixed window size and prevent resizing
-        self.root.geometry("600x400")
-        self.root.resizable(False, False)
+        screen_width = root.winfo_screenwidth()
+        screen_height = root.winfo_screenheight()
+        self.root.geometry(f"{screen_width}x{screen_height}")
         
         # Create the header frame to hold the tab buttons
         self.header_frame = tk.Frame(root)
