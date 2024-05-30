@@ -75,6 +75,10 @@ class TabApp:
         self.tabs.append((tab_button, tab_content))
         
     def show_tab(self, index):
+        # Check if the index is within the valid range
+        if index < 0 or index >= len(self.tabs):
+            return
+        
         # Hide all tabs
         for _, content in self.tabs:
             content.pack_forget()
@@ -90,18 +94,13 @@ class TabApp:
             tab_button.pack_forget()  # Remove the tab button from display
             tab_button.destroy()
             tab_content.destroy()
-            
-            # Calculate the new width for the remaining tab buttons
-            new_width = self.header_frame.winfo_width() // len(self.tabs)
-            
-            # Update the width of the remaining tab buttons
-            # for button, _ in self.tabs:
-            #     button.config(width=new_width)
-            
-            # Show the next tab, if available
-            next_index = self.current_tab_index % len(self.tabs)
-            self.show_tab(next_index)
 
-            # Resize the window to its original size
-            self.root.update_idletasks()
-            self.root.geometry(f"{self.root.winfo_width()}x{self.root.winfo_height()}")
+            # Adjust the current_tab_index if necessary
+            if self.current_tab_index >= len(self.tabs):
+                # If the current tab index is out of bounds after removal, set it to the last tab
+                self.current_tab_index = len(self.tabs) - 1
+            
+            # Show the next tab
+            self.show_tab(self.current_tab_index)
+        else:
+            print("Cannot close the last tab.")
