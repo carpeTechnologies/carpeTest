@@ -24,8 +24,9 @@ class LaunchScreen:
 
     def submit(self):
         # Get input values and store them in variables
-        field_values = [field.get() for field in self.fields]
-        # Call the submit callback function with the field values
+        # field_values = [field.get() for field in self.fields] ## this is critical to getting the field inputs!
+        
+        field_values = ['2a8e9a34a61c45e1850963054b704f82','b1d4a804aa0241babd77e3ab08fece2a', 'test-drive-000aeaece5fe49d7891a8', '9af39a319af44df58b2b332c7b759c5f']
         self.submit_callback(field_values)
         # Close the launch screen window
         self.root.destroy()
@@ -47,14 +48,17 @@ class TabApp:
         # Initialize tabs list and current tab index
         self.tabs = []
         self.current_tab_index = 0
+        self.no_orders_label = None
         
         # Create tabs for each order
         for order in orders:
             self.add_tab(order)
         
-        # Show the first tab
+        # Show the first tab or no orders message
         if self.tabs:
             self.show_tab(0)
+        else:
+            self.show_no_orders_message()
         
     def add_tab(self, order):
         tab_index = len(self.tabs)
@@ -107,4 +111,18 @@ class TabApp:
             # Show the next tab
             self.show_tab(self.current_tab_index)
         else:
-            print("Cannot close the last tab.")
+            # Remove the last tab
+            tab_button, tab_content = self.tabs.pop(self.current_tab_index)
+            tab_button.pack_forget()
+            tab_button.destroy()
+            tab_content.destroy()
+
+            # Display 'No orders to show' message
+            self.show_no_orders_message()
+
+    def show_no_orders_message(self):
+        if self.no_orders_label is None:
+            self.no_orders_label = tk.Label(self.content_frame, text = "No orders to show", font =('Helvetica', 24))
+        for widget in self.content_frame.winfo_children():
+            widget.pack_forget()
+        self.no_orders_label.pack(fill = tk.BOTH, expand = True)
