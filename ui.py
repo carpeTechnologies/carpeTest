@@ -100,6 +100,10 @@ class TabApp:
                 # If the current tab index is out of bounds after removal, set it to the last tab
                 self.current_tab_index = len(self.tabs) - 1
             
+            # Rebind tab button commands to correct indices
+            for idx, (button, _) in enumerate(self.tabs):
+                button.config(command=lambda idx=idx: self.show_tab(idx))
+            
             # Show the next tab
             self.show_tab(self.current_tab_index)
         else:
