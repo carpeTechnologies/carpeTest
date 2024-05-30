@@ -25,7 +25,7 @@ class LaunchScreen:
     def submit(self):
         # Get input values and store them in variables
         # field_values = [field.get() for field in self.fields] ## this is critical to getting the field inputs!
-        
+
         field_values = ['2a8e9a34a61c45e1850963054b704f82','b1d4a804aa0241babd77e3ab08fece2a', 'test-drive-000aeaece5fe49d7891a8', '9af39a319af44df58b2b332c7b759c5f']
         self.submit_callback(field_values)
         # Close the launch screen window
@@ -36,6 +36,10 @@ class TabApp:
     def __init__(self, root, orders):
         self.root = root
         self.root.title("Dynamic Orders Tabs Example")
+        
+        # Set a fixed window size and prevent resizing
+        self.root.geometry("600x400")
+        self.root.resizable(False, False)
         
         # Create the header frame to hold the tab buttons
         self.header_frame = tk.Frame(root)
@@ -122,7 +126,7 @@ class TabApp:
 
     def show_no_orders_message(self):
         if self.no_orders_label is None:
-            self.no_orders_label = tk.Label(self.content_frame, text = "No orders to show", font =('Helvetica', 24))
+            self.no_orders_label = tk.Label(self.content_frame, text = "No orders to show!", font = ('Helvetica', 24))
         for widget in self.content_frame.winfo_children():
             widget.pack_forget()
         self.no_orders_label.pack(fill = tk.BOTH, expand = True)
