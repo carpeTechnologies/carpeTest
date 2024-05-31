@@ -35,7 +35,7 @@ class LaunchScreen:
 class TabApp:
     def __init__(self, root, orders):
         self.root = root
-        self.root.title("Dynamic Orders Tabs Example")
+        self.root.title("Carpe")
         
         # Set a fixed window size and prevent resizing
         screen_width = root.winfo_screenwidth()
