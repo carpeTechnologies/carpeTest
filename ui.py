@@ -95,6 +95,9 @@ class TabApp:
         # Show the selected tab
         self.tabs[index][1].pack(fill=tk.BOTH, expand=True)
         self.current_tab_index = index
+        order_number = self.tabs[index][0]['text'].split()[1]  # Extract order number from tab button text
+        self.root.title(f"Order {order_number}")
+
         
     def close_current_tab(self):
         if len(self.tabs) > 1:  # Ensure there's at least one tab left
@@ -131,3 +134,4 @@ class TabApp:
         for widget in self.content_frame.winfo_children():
             widget.pack_forget()
         self.no_orders_label.pack(fill = tk.BOTH, expand = True)
+        self.root.title("Carpe")
