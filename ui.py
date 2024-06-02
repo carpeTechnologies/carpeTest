@@ -90,13 +90,39 @@ class TabApp:
         tab_content = tk.Frame(self.content_frame)
         tab_content.pack(expand=True, fill=tk.BOTH)  # Expand to fill the available space
 
-        # Create label for order ID and price
-        order_info_label = tk.Label(tab_content, text=f"Order ID: {order['id']}\nOrder Total Price: {order['totals'][0]['value']}")
-        order_info_label.place(relx=0.5, rely=0.5, anchor=tk.CENTER)  # Center the label
-        
+        # Create a frame to hold order lines
+        order_lines_frame = tk.Frame(tab_content)
+        order_lines_frame.pack(expand=True, fill=tk.BOTH, pady=20)
+
+        # Display order lines
+        for line in order.get('orderLines', []):
+            description = line.get('description', '')
+            unit_price = line.get('unitPrice', 0)
+            quantity = line.get('quantity', {}).get('value', 0)
+
+            # Create a frame for each order line
+            line_frame = tk.Frame(order_lines_frame)
+            line_frame.pack(fill=tk.X, pady=2)
+
+            # Create and place labels for quantity, description, and price
+            qty_desc_label = tk.Label(line_frame, text=f"{quantity} x {description}", anchor='w')
+            qty_desc_label.grid(row=0, column=0, sticky='w', padx=10)
+
+            price_label = tk.Label(line_frame, text=f"${unit_price:.2f}", anchor='e')
+            price_label.grid(row=0, column=1, sticky='e', padx=10)
+            
+            # Configure grid columns to adjust weight for proper alignment
+            line_frame.grid_columnconfigure(0, weight=1)
+            line_frame.grid_columnconfigure(1, weight=0)
+
+        # Create label for order total price
+        total_price = sum(line.get('unitPrice', 0) * line.get('quantity', {}).get('value', 0) for line in order.get('orderLines', []))
+        total_label = tk.Label(tab_content, text=f"Total Price: ${total_price:.2f}")
+        total_label.pack(pady=10)
+
         # Create close button for the tab
         close_button = tk.Button(tab_content, text="Close Tab", command=self.close_current_tab)
-        close_button.place(relx=0.5, rely=0.6, anchor=tk.CENTER)  # Center the button
+        close_button.pack(pady=10)
 
         # Add tab to the list
         self.tabs.append((tab_button, tab_content))
@@ -104,6 +130,7 @@ class TabApp:
         # Update canvas scroll region
         self.header_frame.update_idletasks()
         self.canvas.config(scrollregion=self.canvas.bbox("all"))
+
 
     def show_tab(self, index):
         # Check if the index is within the valid range
