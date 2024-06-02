@@ -90,9 +90,13 @@ class TabApp:
         tab_content = tk.Frame(self.content_frame)
         tab_content.pack(expand=True, fill=tk.BOTH)  # Expand to fill the available space
 
-        # Create a frame to hold order lines
-        order_lines_frame = tk.Frame(tab_content)
-        order_lines_frame.pack(expand=True, fill=tk.BOTH, pady=20)
+        # Create a container frame with padding for left and right sides
+        container_frame = tk.Frame(tab_content)
+        container_frame.pack(expand=True, fill=tk.BOTH, padx=tab_content.winfo_screenwidth() * 0.35, pady=20)
+
+        # Create and place label for the order number at the top
+        order_number_label = tk.Label(container_frame, text=f"Order ID: {order['id']}", font=('Helvetica', 16, 'bold'))
+        order_number_label.pack(pady=10)
 
         # Display order lines
         for line in order.get('orderLines', []):
@@ -101,7 +105,7 @@ class TabApp:
             quantity = line.get('quantity', {}).get('value', 0)
 
             # Create a frame for each order line
-            line_frame = tk.Frame(order_lines_frame)
+            line_frame = tk.Frame(container_frame)
             line_frame.pack(fill=tk.X, pady=2)
 
             # Create and place labels for quantity, description, and price
@@ -115,13 +119,24 @@ class TabApp:
             line_frame.grid_columnconfigure(0, weight=1)
             line_frame.grid_columnconfigure(1, weight=0)
 
-        # Create label for order total price
+        # Create a frame for total price and close button
+        bottom_frame = tk.Frame(container_frame)
+        bottom_frame.pack(fill=tk.X, pady=10)
+
+        # Create label for order total price and set it to bold
         total_price = sum(line.get('unitPrice', 0) * line.get('quantity', {}).get('value', 0) for line in order.get('orderLines', []))
-        total_label = tk.Label(tab_content, text=f"Total Price: ${total_price:.2f}")
-        total_label.pack(pady=10)
+        total_label = tk.Label(bottom_frame, text="Total Price:", font=('Helvetica', 12, 'bold'), anchor='w')
+        total_label.grid(row=0, column=0, sticky='w', padx=10)
+
+        price_label = tk.Label(bottom_frame, text=f"${total_price:.2f}", font=('Helvetica', 12, 'bold'), anchor='e')
+        price_label.grid(row=0, column=1, sticky='e', padx=10)
+        
+        # Configure grid columns to adjust weight for proper alignment
+        bottom_frame.grid_columnconfigure(0, weight=1)
+        bottom_frame.grid_columnconfigure(1, weight=0)
 
         # Create close button for the tab
-        close_button = tk.Button(tab_content, text="Close Tab", command=self.close_current_tab)
+        close_button = tk.Button(container_frame, text="Close Tab", command=self.close_current_tab)
         close_button.pack(pady=10)
 
         # Add tab to the list
@@ -130,7 +145,6 @@ class TabApp:
         # Update canvas scroll region
         self.header_frame.update_idletasks()
         self.canvas.config(scrollregion=self.canvas.bbox("all"))
-
 
     def show_tab(self, index):
         # Check if the index is within the valid range
