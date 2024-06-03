@@ -60,7 +60,7 @@ class TabApp:
         # Configure grid weights
         self.root.grid_columnconfigure(0, weight=1)
         self.root.grid_rowconfigure(0, weight=0)  # Adjusted weight for row 0
-        self.root.grid_rowconfigure(1, weight=1)  # Adjusted weight for row 1
+        self.root.grid_rowconfigure(1, weight=0)  # Adjusted weight for row 1
         self.root.grid_rowconfigure(2, weight=1)
 
         # Initialize tabs list and current tab index
@@ -95,7 +95,7 @@ class TabApp:
         container_frame.pack(expand=True, fill=tk.BOTH, padx=tab_content.winfo_screenwidth() * 0.35, pady=20)
 
         # Create and place label for the order number at the top
-        order_number_label = tk.Label(container_frame, text=f"Order ID: {order['id']}", font=('Helvetica', 16, 'bold'))
+        order_number_label = tk.Label(container_frame, text=f"Order Number: {order['id']}", font=('Helvetica', 16, 'bold'))
         order_number_label.pack(pady=10)
 
         # Display order lines
