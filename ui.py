@@ -182,6 +182,10 @@ class TabApp:
 
             # Show the next tab
             self.show_tab(self.current_tab_index)
+            
+            # Update canvas scroll region
+            self.header_frame.update_idletasks()
+            self.canvas.config(scrollregion=self.canvas.bbox("all"))
         else:
             # Remove the last tab
             tab_button, tab_content = self.tabs.pop(self.current_tab_index)
