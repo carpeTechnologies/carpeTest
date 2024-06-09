@@ -136,8 +136,8 @@ class TabApp:
         bottom_frame.grid_columnconfigure(1, weight=0)
 
         # Create close button for the tab
-        close_button = tk.Button(container_frame, text="Close Tab", command=self.close_current_tab)
-        close_button.pack(pady=10)
+        close_button = tk.Button(container_frame, text = "Close Tab", command = self.close_current_tab)
+        close_button.pack(pady = 10)
 
         # Add tab to the list
         self.tabs.append((tab_button, tab_content))
