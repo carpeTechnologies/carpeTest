@@ -128,24 +128,31 @@ class TabApp:
         button_frame = tk.Frame(right_container)
         button_frame.grid(row=1, column=0, padx=10, sticky=tk.N)
         orderConf = tk.Label(right_container, text = "Is this order correct?", font = ('Helvetica', 18, 'bold'), anchor = 'n')
-        orderConf.grid(row=0, column=0, columnspan = 2, sticky='w', pady = padFromTop)
+        orderConf.grid(row=0, column=0, sticky='w', pady = padFromTop)
 
         # Create Yes and No buttons with fixed size
-        close_button = tk.Button(button_frame, text="Yes", command=self.close_current_order, width=10, height=2)
-        close_button.grid(row=1, column=0, padx=5)
+        close_button = tk.Button(button_frame, text = "Yes", command = lambda: self.close_current_order(order['id']), width=10, height=2)
+        close_button.grid(row = 1, column = 0, padx = 5)
 
-        no_button = tk.Button(button_frame, text="No", width=10, height=2)
-        no_button.grid(row=1, column=1, padx=5)
+        no_button = tk.Button(button_frame, text = "No", width = 10, height = 2)
+        no_button.grid(row = 1, column = 1, padx = 5)
 
         # Update the window title
         self.root.title(f"Order {order['id']}")
+
+    def userConfirmedOrder(self, index):
+        order = self.orders[index]
+        print(f"User confirmed Order Number: {order['id']} is correct!")
+        self.close_current_order(self)
+        return
 
     def next_order(self):
         self.current_order_index = (self.current_order_index + 1) % len(self.orders)
         self.show_order(self.current_order_index)
 
-    def close_current_order(self):
+    def close_current_order(self, order_id):
         if self.orders:
+            print(f"User confirmed Order Number: {order_id} is correct!")
             # Remove the current order
             self.orders.pop(self.current_order_index)
 
