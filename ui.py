@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+import tkmacosx as tkmac
 
 class LaunchScreen:
     def __init__(self, root, submit_callback):
@@ -85,8 +86,8 @@ class TabApp:
 
         padFromTop = 35
         lineItemPadding = 5
-
-        
+        standardText = ('Helvetica', 18)
+        standardTextBold = ('Helvetica', 18, 'bold')
         # Create and place label for the order number at the top
         order_number_label = tk.Label(order_details_frame, text=f"Order Number: {order['id']}", font=('Helvetica', 22, 'bold'), pady = padFromTop)
         order_number_label.grid(row=0, column=0, columnspan=2, sticky='n')
@@ -98,61 +99,69 @@ class TabApp:
             quantity = line.get('quantity', {}).get('value', 0)
 
             # Create and place labels for quantity, description, and price
-            qty_desc_label = tk.Label(order_details_frame, text = f"{quantity} x {description}", anchor = 'w', font = ('Helvetica', 18), pady = lineItemPadding)
+            qty_desc_label = tk.Label(order_details_frame, text = f"{quantity} x {description}", anchor = 'w', font = standardText, pady = lineItemPadding)
             qty_desc_label.grid(row=i, column=0, sticky='w', padx = (10,10))
 
-            price_label = tk.Label(order_details_frame, text = f"${unit_price:.2f}", anchor = 'e', font = ('Helvetica', 18), pady = lineItemPadding)
+            price_label = tk.Label(order_details_frame, text = f"${unit_price:.2f}", anchor = 'e', font = standardText, pady = lineItemPadding)
             price_label.grid(row = i, column = 1, sticky = 'ew')
 
-        # Create a frame for total price
-        total_frame = tk.Frame(left_container)
-        total_frame.grid(row=2, column=1, sticky='e', pady=(10, 0))
+        total_price = sum(line.get('unitPrice', 0) * line.get('quantity', {}).get('value', 0) for line in order.get('orderLines', []))
 
         # Create label for order total price and set it to bold
-        total_price = sum(line.get('unitPrice', 0) * line.get('quantity', {}).get('value', 0) for line in order.get('orderLines', []))
-        total_label = tk.Label(total_frame, text="Total Price:", font=('Helvetica', 18, 'bold'), anchor='w')
-        total_label.grid(row=0, column=0, sticky='w')
-
-        price_label = tk.Label(total_frame, text=f"${total_price:.2f}", font=('Helvetica', 18, 'bold'), anchor='e')
-        price_label.grid(row=0, column=1, sticky='e')
+        total_label = tk.Label(order_details_frame, text="Total Price:", font = standardTextBold, anchor = 'w')
+        total_label.grid(row = len(order.get('orderLines', [])) + 1, column = 0, sticky = 'e', pady = (10, 0))
+ 
+        price_label = tk.Label(order_details_frame, text=f"${total_price:.2f}", font = standardTextBold, anchor = 'e')
+        price_label.grid(row = len(order.get('orderLines', [])) + 1, column = 1, sticky = 'e', pady = (10, 0))
 
         # Create a container frame for the right side
         right_container = tk.Frame(self.content_frame)
-        right_container.grid(row=0, column=1, sticky=tk.NSEW)
+        right_container.grid(row = 0, column = 1, sticky = tk.NSEW)
 
         # Adjust column weights to occupy right half of the screen
-        self.content_frame.grid_columnconfigure(0, weight=1)
-        self.content_frame.grid_columnconfigure(1, weight=1)
+        self.content_frame.grid_columnconfigure(0, weight = 1)
+        self.content_frame.grid_columnconfigure(1, weight = 1)
 
         # Create a frame for the fixed-size buttons
         button_frame = tk.Frame(right_container)
-        button_frame.grid(row=1, column=0, padx=10, sticky=tk.N)
-        orderConf = tk.Label(right_container, text = "Is this order correct?", font = ('Helvetica', 18, 'bold'), anchor = 'n')
-        orderConf.grid(row=0, column=0, sticky='w', pady = padFromTop)
+        button_frame.grid(row = 1, column = 0,columnspan = 2, padx = 10, sticky = tk.N)
+        orderConf = tk.Label(right_container, text = "Is this order correct?", font = ('Helvetica', 25, 'bold'), anchor = 'n')
+        orderConf.grid(row = 0, column = 1, columnspan = 1,sticky = 'w', pady = padFromTop)
+
+        # Center the two columns in right_container
+        right_container.grid_columnconfigure(0, weight = 1)
+        right_container.grid_columnconfigure(1, weight = 1)
 
         # Create Yes and No buttons with fixed size
-        close_button = tk.Button(button_frame, text = "Yes", command = lambda: self.close_current_order(order['id']), width=10, height=2)
-        close_button.grid(row = 1, column = 0, padx = 5)
+        confButtonWidths = 5
+        confButtonHeights = 2
+        buttonFont = ('Helvetica', 58)
+        close_button = tkmac.Button(button_frame, text = "Yes", font = buttonFont, bg = 'green', fg = 'white', command = lambda: self.orderCorrect(order['id']))
+        close_button.grid(row = 1, column = 0)
 
-        no_button = tk.Button(button_frame, text = "No", width = 10, height = 2)
+        no_button = tkmac.Button(button_frame, text = "No", font = buttonFont, bg = '#ff4122', fg = 'white', command = lambda: self.orderIncorrect(order['id']))
         no_button.grid(row = 1, column = 1, padx = 5)
 
-        # Update the window title
+        button_frame.grid_columnconfigure(0, weight = 1)
+        button_frame.grid_columnconfigure(1, weight = 1)
+        # Update the window title 
         self.root.title(f"Order {order['id']}")
 
-    def userConfirmedOrder(self, index):
-        order = self.orders[index]
-        print(f"User confirmed Order Number: {order['id']} is correct!")
-        self.close_current_order(self)
-        return
+    def orderIncorrect(self, order_id):
+        print(f'ALERT. Order Number: {order_id} is wrong!')
+        self.close_current_order()
+
+    def orderCorrect(self, order_id):
+        print(f'Order Number: {order_id} is correct!')
+        self.close_current_order()
 
     def next_order(self):
         self.current_order_index = (self.current_order_index + 1) % len(self.orders)
         self.show_order(self.current_order_index)
 
-    def close_current_order(self, order_id):
+    def close_current_order(self):
         if self.orders:
-            print(f"User confirmed Order Number: {order_id} is correct!")
+            # print(f"User confirmed order number: {order_id} is correct!")
             # Remove the current order
             self.orders.pop(self.current_order_index)
 
