@@ -69,17 +69,21 @@ class TabApp:
         for widget in self.content_frame.winfo_children():
             widget.destroy()
 
-        # Create a container frame for the left side
         left_container = tk.Frame(self.content_frame)
         left_container.grid(row=0, column=0, sticky='nsew')
+        left_container.grid_rowconfigure(0, weight=1)
+        left_container.grid_rowconfigure(1, weight=3)
+        left_container.grid_rowconfigure(2, weight=1)
         left_container.grid_columnconfigure(0, weight=1)
+        left_container.grid_columnconfigure(1, weight=1)
+        left_container.grid_columnconfigure(2, weight=1)
 
         # Create a frame for the order details
         order_details_frame = tk.Frame(left_container)
-        order_details_frame.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
+        order_details_frame.grid(row=1, column=1, padx=10, pady=10, sticky='nsew')
         order_details_frame.grid_columnconfigure(0, weight=1)
 
-        padFromTop = 15
+        padFromTop = 35
         lineItemPadding = 5
 
         
@@ -102,7 +106,7 @@ class TabApp:
 
         # Create a frame for total price
         total_frame = tk.Frame(left_container)
-        total_frame.grid(row = 1, column = 0, sticky = 'e', pady = (10, 0))
+        total_frame.grid(row=2, column=1, sticky='e', pady=(10, 0))
 
         # Create label for order total price and set it to bold
         total_price = sum(line.get('unitPrice', 0) * line.get('quantity', {}).get('value', 0) for line in order.get('orderLines', []))
@@ -117,24 +121,24 @@ class TabApp:
         right_container.grid(row=0, column=1, sticky=tk.NSEW)
 
         # Adjust column weights to occupy right half of the screen
-        self.content_frame.grid_columnconfigure(0, weight = 1)
-        self.content_frame.grid_columnconfigure(1, weight = 1)
+        self.content_frame.grid_columnconfigure(0, weight=1)
+        self.content_frame.grid_columnconfigure(1, weight=1)
 
         # Create a frame for the fixed-size buttons
         button_frame = tk.Frame(right_container)
-        button_frame.grid(row = 0, column = 0, padx = 10, pady = 10, sticky = tk.N)
+        button_frame.grid(row=1, column=0, padx=10, sticky=tk.N)
+        orderConf = tk.Label(right_container, text = "Is this order correct?", font = ('Helvetica', 18, 'bold'), anchor = 'n')
+        orderConf.grid(row=0, column=0, columnspan = 2, sticky='w', pady = padFromTop)
 
-        # Create close button for the tab with fixed size
-        close_button = tk.Button(button_frame, text = "Close Tab", command = self.close_current_order, width = 10, height = 2, pady = padFromTop)
-        close_button.grid(row = 0, column = 0, padx = 5, pady =5 , sticky = 'n')
+        # Create Yes and No buttons with fixed size
+        close_button = tk.Button(button_frame, text="Yes", command=self.close_current_order, width=10, height=2)
+        close_button.grid(row=1, column=0, padx=5)
 
-        # Create 'No' button with fixed size
-        no_button = tk.Button(button_frame, text = "No", width = 10, height = 2, pady = padFromTop)
-        no_button.grid(row = 0, column = 1, padx = 5, pady = 5, sticky = 'n')
+        no_button = tk.Button(button_frame, text="No", width=10, height=2)
+        no_button.grid(row=1, column=1, padx=5)
 
         # Update the window title
         self.root.title(f"Order {order['id']}")
-
 
     def next_order(self):
         self.current_order_index = (self.current_order_index + 1) % len(self.orders)
