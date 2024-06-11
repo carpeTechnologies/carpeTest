@@ -148,7 +148,7 @@ class TabApp:
         self.root.title(f"Order {order['id']}")
 
     def orderIncorrect(self, order_id):
-        print(f'ALERT. Order Number: {order_id} is wrong!')
+        print(f'ALERT: Order Number: {order_id} is wrong!')
         self.close_current_order()
 
     def orderCorrect(self, order_id):
@@ -161,7 +161,6 @@ class TabApp:
 
     def close_current_order(self):
         if self.orders:
-            # print(f"User confirmed order number: {order_id} is correct!")
             # Remove the current order
             self.orders.pop(self.current_order_index)
 
