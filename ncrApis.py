@@ -1,6 +1,7 @@
 import requests
 import pandas as pd
 import json
+from time import gmtime, strftime
 from datetime import datetime
 from datetime import timezone
 import pytz
@@ -179,7 +180,7 @@ def process_field_values(field_values):
     getAllOrders = baseUrl() + findAllOrders()
     heads = hmacHeaders(secretKey, sharedKey, org, enterpriseUnit, getAllOrders, 'GET')
     request = requests.get(getAllOrders, headers = heads)
-    
+    print(f'Sent request at {strftime("%Y-%m-%d %H:%M:%S", gmtime())} GMT')
     response_data = json.loads(request.text)
     orders = response_data['orders']
 
