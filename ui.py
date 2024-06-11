@@ -28,7 +28,8 @@ class LaunchScreen:
         # Get input values and store them in variables
         # field_values = [field.get() for field in self.fields] ## this is critical to getting the field inputs!
 
-        field_values = ['2a8e9a34a61c45e1850963054b704f82','b1d4a804aa0241babd77e3ab08fece2a', 'test-drive-000aeaece5fe49d7891a8', '9af39a319af44df58b2b332c7b759c5f']
+        # field_values = ['2a8e9a34a61c45e1850963054b704f82','b1d4a804aa0241babd77e3ab08fece2a', 'test-drive-000aeaece5fe49d7891a8', '9af39a319af44df58b2b332c7b759c5f']
+        field_values = ['2a8e9a34a61c45e1850963054b704f82','b1d4a804aa0241babd77e3ab08fece2a', 'test-drive-000aeaece5fe49d7891a8', 'f8873705ecfb41919875c14bf59c1fb2']
         self.submit_callback(field_values)
         # Close the launch screen window
         self.root.destroy()
