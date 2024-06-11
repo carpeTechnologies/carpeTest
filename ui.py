@@ -61,6 +61,8 @@ class TabApp:
         self.processed_orders = set()
         self.current_order_index = 0
 
+        self.thankyou_frame = tk.Frame(root)
+
     def addProcessedOrder(self, order_id):
         self.processed_orders.add(order_id)
 
@@ -202,6 +204,7 @@ class TabApp:
                 self.show_order(self.current_order_index)
             else:
                 self.show_no_orders_message()
+            self.show_thank_you_message()
 
     def show_no_orders_message(self):
         for widget in self.content_frame.winfo_children():
@@ -218,3 +221,20 @@ class TabApp:
 
     def get_correct_orders(self):
         return self.correct_orders
+    
+    def show_thank_you_message(self):
+        for widget in self.content_frame.winfo_children():
+            widget.destroy()
+        self.thankyou_frame = tk.Frame(self.content_frame)
+        self.thankyou_frame.pack(expand=True)
+        # Create and place the thank you label
+        thank_you_label = tk.Label(self.thankyou_frame, text = "Thank you!\nPlease move forward to the pick up window.", font = ('Helvetica', 36))
+        thank_you_label.pack(expand = True)
+
+        self.root.after(14500, self.remove_thank_you_message)
+
+    def remove_thank_you_message(self):
+        # Destroy the thank you message frame
+        if self.thankyou_frame:
+            self.thankyou_frame.destroy()
+            self.thankyou_frame = None
