@@ -176,18 +176,37 @@ def parse_orders(json_data):
 
 def process_field_values(field_values):
     secretKey, sharedKey, org, enterpriseUnit = field_values
-    root = tk.Tk()
     getAllOrders = baseUrl() + findAllOrders()
     heads = hmacHeaders(secretKey, sharedKey, org, enterpriseUnit, getAllOrders, 'GET')
+    
+    root = tk.Tk()
+    app = TabApp(root)  # Initialize TabApp with root window
+    
+    def fetch_orders():
+        orders = autoGetOrders(getAllOrders, heads, app)
+        app.update_orders(orders)  # Update the TabApp with new orders
+        root.after(3000, fetch_orders)  # Schedule the next fetch in 3 seconds
+    
+    fetch_orders()  # Initial call to start the loop
+    root.mainloop()
+
+def autoGetOrders(getAllOrders, heads, tab_app):
     request = requests.get(getAllOrders, headers = heads)
     print(f'Sent request at {strftime("%Y-%m-%d %H:%M:%S", gmtime())} GMT')
     response_data = json.loads(request.text)
+    # incorrect_orders = tab_app.get_incorrect_orders()
+    # correct_orders = tab_app.get_correct_orders()
+    # unConfOrders = tab_app.getOrders()
+    
     orders = response_data['orders']
-
-    app = TabApp(root, orders)
-    root.mainloop()
-
-    return
+    processed_orders = tab_app.getProcessedOrders()
+    for order in orders:
+        order_id = order['id']
+        # if order_id not in incorrect_orders and order_id not in correct_orders:
+        if order_id not in processed_orders:
+            print(f"Got new Order ID: {order_id}")
+            tab_app.addProcessedOrder(order_id)
+    return orders
 
 def main():
     root = tk.Tk()
