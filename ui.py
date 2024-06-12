@@ -91,7 +91,7 @@ class TabApp:
         no_button = tkmac.Button(button_frame, text="No", font=('Helvetica', 58), bg='#ff4122', fg='white', command=lambda: self.handle_order_option(order_id, False))
         no_button.grid(row=1, column=1, padx=5)
 
-        self.configure_column_weights(button_frame)
+        self.configureColWeights(self.right_container)
         return
     
     def create_payment_buttons(self, order_id):
@@ -101,10 +101,10 @@ class TabApp:
         payment_label = tk.Label(self.right_container, text="How would you like to pay?", font=('Helvetica', 25, 'bold'), anchor='n')
         payment_label.grid(row=0, column=1, columnspan=1, sticky='w', pady=35)
 
-        cash_button = tkmac.Button(payment_frame, text="Cash", font=('Helvetica', 58), bg='green', fg='white', command=lambda: self.handle_payment_option(order_id, True))
+        cash_button = tkmac.Button(payment_frame, text="Cash", font=('Helvetica', 58), bg='green', fg='white', command=lambda: self.handle_payment_option(order_id, False))
         cash_button.grid(row=1, column=0, padx=5, pady=5)
 
-        card_button = tkmac.Button(payment_frame, text="Credit/Debit Card", font=('Helvetica', 58), bg='blue', fg='white', command=lambda: self.handle_payment_option(order_id, False))
+        card_button = tkmac.Button(payment_frame, text="Credit/Debit Card", font=('Helvetica', 58), bg='blue', fg='white', command=lambda: self.handle_payment_option(order_id, True))
         card_button.grid(row=1, column=1, padx=5, pady=5)
 
         payment_frame.grid_columnconfigure(0, weight=1)
@@ -266,7 +266,6 @@ class TabApp:
                 self.show_order(self.current_order_index)
             else:
                 self.show_no_orders_message()
-            # self.show_thank_you_message()
 
     def show_no_orders_message(self):
         self.removeWidgets('content_frame')
