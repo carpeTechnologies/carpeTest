@@ -62,6 +62,7 @@ class TabApp:
         self.current_order_index = 0
 
         self.thankyou_frame = tk.Frame(root)
+        self.right_container = None
 
     def addProcessedOrder(self, order_id):
         self.processed_orders.add(order_id)
@@ -76,6 +77,39 @@ class TabApp:
             self.show_order(self.current_order_index)
         else:
             self.show_no_orders_message()
+
+    def createOrderButton(self, order_id):
+        button_frame = tk.Frame(self.right_container)
+        button_frame.grid(row=1, column=0, columnspan=2, padx=10, sticky=tk.N)
+
+        order_conf_label = tk.Label(self.right_container, text="Is this order correct?", font=('Helvetica', 25, 'bold'), anchor='n')
+        order_conf_label.grid(row=0, column=1, columnspan=1, sticky='w', pady=35)
+
+        close_button = tkmac.Button(button_frame, text="Yes", font=('Helvetica', 58), bg='green', fg='white', command=lambda: self.handle_order_option(order_id, True))
+        close_button.grid(row=1, column=0)
+
+        no_button = tkmac.Button(button_frame, text="No", font=('Helvetica', 58), bg='#ff4122', fg='white', command=lambda: self.handle_order_option(order_id, False))
+        no_button.grid(row=1, column=1, padx=5)
+
+        self.configure_column_weights(button_frame)
+        return
+    
+    def create_payment_buttons(self, order_id):
+        payment_frame = tk.Frame(self.right_container)
+        payment_frame.grid(row=1, column=0, columnspan=2, padx=10, sticky=tk.NSEW)
+
+        payment_label = tk.Label(self.right_container, text="How would you like to pay?", font=('Helvetica', 25, 'bold'), anchor='n')
+        payment_label.grid(row=0, column=1, columnspan=1, sticky='w', pady=35)
+
+        cash_button = tkmac.Button(payment_frame, text="Cash", font=('Helvetica', 58), bg='green', fg='white', command=lambda: self.handle_payment_option(order_id, True))
+        cash_button.grid(row=1, column=0, padx=5, pady=5)
+
+        card_button = tkmac.Button(payment_frame, text="Credit/Debit Card", font=('Helvetica', 58), bg='blue', fg='white', command=lambda: self.handle_payment_option(order_id, False))
+        card_button.grid(row=1, column=1, padx=5, pady=5)
+
+        payment_frame.grid_columnconfigure(0, weight=1)
+        payment_frame.grid_columnconfigure(1, weight=1)
+        self.right_container.grid_columnconfigure(0, weight=1)
 
     def show_order(self, index):
         if not self.orders:
@@ -96,8 +130,7 @@ class TabApp:
         order = self.orders[index]
 
         # Clear the content frame
-        for widget in self.content_frame.winfo_children():
-            widget.destroy()
+        self.removeWidgets('content_frame')
 
         left_container = tk.Frame(self.content_frame)
         left_container.grid(row=0, column=0, sticky='nsew')
@@ -144,47 +177,76 @@ class TabApp:
         price_label.grid(row=len(order.get('orderLines', [])) + 1, column=1, sticky='e', pady=(10, 0))
 
         # Create a container frame for the right side
-        right_container = tk.Frame(self.content_frame)
-        right_container.grid(row=0, column=1, sticky=tk.NSEW)
+        self.right_container = tk.Frame(self.content_frame)
+        self.right_container.grid(row=0, column=1, sticky=tk.NSEW)
 
         # Adjust column weights to occupy right half of the screen
         self.content_frame.grid_columnconfigure(0, weight=1)
         self.content_frame.grid_columnconfigure(1, weight=1)
 
-        # Create a frame for the fixed-size buttons
-        button_frame = tk.Frame(right_container)
-        button_frame.grid(row=1, column=0, columnspan=2, padx=10, sticky=tk.N)
-        orderConf = tk.Label(right_container, text="Is this order correct?", font=('Helvetica', 25, 'bold'), anchor='n')
-        orderConf.grid(row=0, column=1, columnspan=1, sticky='w', pady=padFromTop)
-
-        # Center the two columns in right_container
-        right_container.grid_columnconfigure(0, weight=1)
-        right_container.grid_columnconfigure(1, weight=1)
-
-        # Create Yes and No buttons with fixed size
-        confButtonWidths = 5
-        confButtonHeights = 2
-        buttonFont = ('Helvetica', 58)
-        close_button = tkmac.Button(button_frame, text="Yes", font=buttonFont, bg='green', fg='white', command=lambda: self.orderCorrect(order['id']))
-        close_button.grid(row=1, column=0)
-
-        no_button = tkmac.Button(button_frame, text="No", font=buttonFont, bg='#ff4122', fg='white', command=lambda: self.orderIncorrect(order['id']))
-        no_button.grid(row=1, column=1, padx=5)
-
-        button_frame.grid_columnconfigure(0, weight=1)
-        button_frame.grid_columnconfigure(1, weight=1)
-        # Update the window title 
+        self.createOrderButton(order['id'])
         self.root.title(f"Order {order['id']}")
 
-    def orderIncorrect(self, order_id):
-        print(f'ALERT: Order Number: {order_id} is wrong!')
-        self.close_current_order()
-        self.incorrect_orders.append(order_id)
+    def handleOrderOption(self, orderId, orderConfOption):
+        if orderConfOption:
+            print(f'Order Number: {orderId} is correct!')
+            self.correct_orders.append(orderId)
+            self.showPaymentOptions(orderId)
+        else:
+            print(f'ALERT: Order Number: {orderId} is wrong!')
+            self.incorrect_orders.append(orderId)
+        
+    def showPaymentOptions(self, orderId):
+        self.right_container = tk.Frame(self.content_frame)
+        self.right_container.grid(row=0, column=1, sticky=tk.NSEW)  # Ensure the right container expands both vertically and horizontally
 
-    def orderCorrect(self, order_id):
-        print(f'Order Number: {order_id} is correct!')
-        self.close_current_order()
-        self.correct_orders.append(order_id)
+        label = tk.Label(self.right_container, text="How would you like to pay?", font=('Helvetica', 25, 'bold'), anchor='n')
+        label.grid(row=0, column=1, columnspan = 1, sticky='w', pady=35)
+
+        paymentsFrame = tk.Frame(self.right_container)
+        paymentsFrame.grid(row=1, column=0, columnspan=2, padx=10, sticky=tk.NSEW)  # Ensure the payments frame expands both vertically and horizontally
+
+        buttonFont = ('Helvetica', 58)
+        cash_button = tkmac.Button(paymentsFrame, text="Cash", font=buttonFont, bg='green', fg='white', command=lambda: self.handlePaymentOption(orderId, selectedCard = True))
+        cash_button.grid(row=1, column=0, padx=5, pady=5)
+
+        card_button = tkmac.Button(paymentsFrame, text="Credit/Debit Card", font=buttonFont, bg='blue', fg='white', command=lambda: self.handlePaymentOption(orderId, selectedCard = False))
+        card_button.grid(row=1, column=1, padx=5, pady=5)
+
+        # Configure grid weights for paymentsFrame
+        paymentsFrame.grid_columnconfigure(0, weight=1)
+        paymentsFrame.grid_columnconfigure(1, weight=1)
+
+        # Configure grid weights for right_container
+        self.right_container.grid_columnconfigure(0, weight=1)
+
+    def handlePaymentOption(self, orderId, selectedCard):
+        if selectedCard:
+            print(f'Order {orderId} selected card!')
+        else:
+            print(f'Order {orderId} selected cash!')
+        # self.removeWidgets('right_container')
+        # self.close_current_order()
+
+    def handle_order_option(self, order_id, is_correct):
+        if is_correct:
+            print(f'Order Number: {order_id} is correct!')
+            self.correct_orders.append(order_id)
+            self.create_payment_buttons(order_id)
+        else:
+            print(f'ALERT: Order Number: {order_id} is wrong!')
+            self.incorrect_orders.append(order_id)
+
+    def handle_payment_option(self, order_id, selected_card):
+        if selected_card:
+            print(f'Order {order_id} selected card!')
+        else:
+            print(f'Order {order_id} selected cash!')
+        # You can remove or close the payment buttons here
+        
+    def configureColWeights(self, frameName):
+        frameName.grid_columnconfigure(0, weight=1)
+        frameName.grid_columnconfigure(1, weight=1)
 
     def next_order(self):
         self.current_order_index = (self.current_order_index + 1) % len(self.orders)
@@ -204,11 +266,10 @@ class TabApp:
                 self.show_order(self.current_order_index)
             else:
                 self.show_no_orders_message()
-            self.show_thank_you_message()
+            # self.show_thank_you_message()
 
     def show_no_orders_message(self):
-        for widget in self.content_frame.winfo_children():
-            widget.destroy()
+        self.removeWidgets('content_frame')
         no_orders_label = tk.Label(self.content_frame, text="No orders to show!", font=('Helvetica', 24))
         no_orders_label.pack(expand=True)
         self.root.title("Carpe")
@@ -223,8 +284,7 @@ class TabApp:
         return self.correct_orders
     
     def show_thank_you_message(self):
-        for widget in self.content_frame.winfo_children():
-            widget.destroy()
+        self.removeWidgets('content_frame') 
         self.thankyou_frame = tk.Frame(self.content_frame)
         self.thankyou_frame.pack(expand=True)
         # Create and place the thank you label
@@ -238,3 +298,11 @@ class TabApp:
         if self.thankyou_frame:
             self.thankyou_frame.destroy()
             self.thankyou_frame = None
+
+    def removeWidgets(self, targetArea):
+        if targetArea == 'content_frame':
+            for widget in self.content_frame.winfo_children():
+                widget.destroy()
+        elif targetArea == 'right_container' and self.right_container:
+            for widget in self.right_container.winfo_children():
+                widget.destroy()
