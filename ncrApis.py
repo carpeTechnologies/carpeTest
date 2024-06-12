@@ -181,7 +181,9 @@ def process_field_values(field_values):
     
     root = tk.Tk()
     app = TabApp(root)  # Initialize TabApp with root window
-    
+    orders = autoGetOrders(getAllOrders, heads, app)
+    app.update_orders(orders)
+    app.show_order(0)
     def fetch_orders():
         orders = autoGetOrders(getAllOrders, heads, app)
         app.update_orders(orders)  # Update the TabApp with new orders
@@ -194,10 +196,6 @@ def autoGetOrders(getAllOrders, heads, tab_app):
     request = requests.get(getAllOrders, headers = heads)
     print(f'Sent request at {strftime("%Y-%m-%d %H:%M:%S", gmtime())} GMT')
     response_data = json.loads(request.text)
-    # incorrect_orders = tab_app.get_incorrect_orders()
-    # correct_orders = tab_app.get_correct_orders()
-    # unConfOrders = tab_app.getOrders()
-    
     orders = response_data['orders']
     processed_orders = tab_app.getProcessedOrders()
     for order in orders:

@@ -74,7 +74,7 @@ class TabApp:
         if new_orders:
             self.orders = new_orders
             self.current_order_index = 0
-            self.show_order(self.current_order_index)
+            # self.show_order(self.current_order_index)
         else:
             self.show_no_orders_message()
 
@@ -187,47 +187,6 @@ class TabApp:
         self.createOrderButton(order['id'])
         self.root.title(f"Order {order['id']}")
 
-    def handleOrderOption(self, orderId, orderConfOption):
-        if orderConfOption:
-            print(f'Order Number: {orderId} is correct!')
-            self.correct_orders.append(orderId)
-            self.showPaymentOptions(orderId)
-        else:
-            print(f'ALERT: Order Number: {orderId} is wrong!')
-            self.incorrect_orders.append(orderId)
-        
-    def showPaymentOptions(self, orderId):
-        self.right_container = tk.Frame(self.content_frame)
-        self.right_container.grid(row=0, column=1, sticky=tk.NSEW)  # Ensure the right container expands both vertically and horizontally
-
-        label = tk.Label(self.right_container, text="How would you like to pay?", font=('Helvetica', 25, 'bold'), anchor='n')
-        label.grid(row=0, column=1, columnspan = 1, sticky='w', pady=35)
-
-        paymentsFrame = tk.Frame(self.right_container)
-        paymentsFrame.grid(row=1, column=0, columnspan=2, padx=10, sticky=tk.NSEW)  # Ensure the payments frame expands both vertically and horizontally
-
-        buttonFont = ('Helvetica', 58)
-        cash_button = tkmac.Button(paymentsFrame, text="Cash", font=buttonFont, bg='green', fg='white', command=lambda: self.handlePaymentOption(orderId, selectedCard = True))
-        cash_button.grid(row=1, column=0, padx=5, pady=5)
-
-        card_button = tkmac.Button(paymentsFrame, text="Credit/Debit Card", font=buttonFont, bg='blue', fg='white', command=lambda: self.handlePaymentOption(orderId, selectedCard = False))
-        card_button.grid(row=1, column=1, padx=5, pady=5)
-
-        # Configure grid weights for paymentsFrame
-        paymentsFrame.grid_columnconfigure(0, weight=1)
-        paymentsFrame.grid_columnconfigure(1, weight=1)
-
-        # Configure grid weights for right_container
-        self.right_container.grid_columnconfigure(0, weight=1)
-
-    def handlePaymentOption(self, orderId, selectedCard):
-        if selectedCard:
-            print(f'Order {orderId} selected card!')
-        else:
-            print(f'Order {orderId} selected cash!')
-        # self.removeWidgets('right_container')
-        # self.close_current_order()
-
     def handle_order_option(self, order_id, is_correct):
         if is_correct:
             print(f'Order Number: {order_id} is correct!')
@@ -236,13 +195,15 @@ class TabApp:
         else:
             print(f'ALERT: Order Number: {order_id} is wrong!')
             self.incorrect_orders.append(order_id)
+            self.create_payment_buttons(order_id)
 
     def handle_payment_option(self, order_id, selected_card):
         if selected_card:
             print(f'Order {order_id} selected card!')
         else:
             print(f'Order {order_id} selected cash!')
-        # You can remove or close the payment buttons here
+        self.removeWidgets('right_container')
+        self.close_current_order()
         
     def configureColWeights(self, frameName):
         frameName.grid_columnconfigure(0, weight=1)
