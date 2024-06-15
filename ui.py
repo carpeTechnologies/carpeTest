@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 import tkmacosx as tkmac
+import time
 
 class LaunchScreen:
     def __init__(self, root, submit_callback):
@@ -203,7 +204,8 @@ class TabApp:
         else:
             print(f'Order {order_id} selected cash!')
         self.removeWidgets('right_container')
-        self.close_current_order()
+        self.show_thank_you_message()
+        self.root.after(5000, self.close_current_order)
         
     def configureColWeights(self, frameName):
         frameName.grid_columnconfigure(0, weight=1)
@@ -251,13 +253,13 @@ class TabApp:
         thank_you_label = tk.Label(self.thankyou_frame, text = "Thank you!\nPlease move forward to the pick up window.", font = ('Helvetica', 36))
         thank_you_label.pack(expand = True)
 
-        self.root.after(14500, self.remove_thank_you_message)
+        # self.remove_thank_you_message()
 
     def remove_thank_you_message(self):
-        # Destroy the thank you message frame
         if self.thankyou_frame:
             self.thankyou_frame.destroy()
             self.thankyou_frame = None
+        print(f'Thank you message removed and frame destroyed')
 
     def removeWidgets(self, targetArea):
         if targetArea == 'content_frame':
