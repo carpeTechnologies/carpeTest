@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
 import tkmacosx as tkmac
-import time
 
 class LaunchScreen:
     def __init__(self, root, submit_callback):
