@@ -13,12 +13,21 @@ def getPaymentIntents():
 
 def createPaymentIntent(amt): # https://docs.stripe.com/terminal/quickstart
     url = f'https://api.stripe.com/v1/payment_intents'
-    heads = {'Authorization': stripeKeys()}
+    heads = {'Authorization': stripeKeys(), 'Content-Type': 'application/x-www-form-urlencoded'}
     payBody = {
         "amount": str(int(amt * 100)), # Amount is in ${XX.XX} format. Stripe wants the amount to be in cents. Multiply by 100 to remove decimals and then cast to an integer
-        "currency": "USD"
+        "currency": "USD", 
+        "payment_method_types": ["card_present"]
     }
-    req = requests.post(url, headers = heads, data = payBody)
+    form_data = []
+    for key, values in payBody.items():
+        if isinstance(values, list):
+            for i, value in enumerate(values):
+                form_data.append((f'{key}[{i}]', value))
+        else:
+            form_data.append((key, values))
+    print(payBody)
+    req = requests.post(url, headers = heads, data = form_data)
     # print(req.json())
     if req.status_code == 200:
         print('Payment intent created successfully')
