@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 import tkmacosx as tkmac
+import stripeApis
 
 class LaunchScreen:
     def __init__(self, root, submit_callback):
@@ -78,33 +79,33 @@ class TabApp:
         else:
             self.show_no_orders_message()
 
-    def createOrderButton(self, order_id):
+    def createOrderButton(self, order_id, price):
         button_frame = tk.Frame(self.right_container)
         button_frame.grid(row=1, column=0, columnspan=2, padx=10, sticky=tk.N)
 
         order_conf_label = tk.Label(self.right_container, text="Is this order correct?", font=('Helvetica', 25, 'bold'), anchor='n')
         order_conf_label.grid(row=0, column=1, columnspan=1, sticky='w', pady=35)
 
-        close_button = tkmac.Button(button_frame, text="Yes", font=('Helvetica', 58), bg='green', fg='white', command=lambda: self.handle_order_option(order_id, True))
+        close_button = tkmac.Button(button_frame, text="Yes", font=('Helvetica', 58), bg='green', fg='white', command=lambda: self.handle_order_option(order_id, True, price))
         close_button.grid(row=1, column=0)
 
-        no_button = tkmac.Button(button_frame, text="No", font=('Helvetica', 58), bg='#ff4122', fg='white', command=lambda: self.handle_order_option(order_id, False))
+        no_button = tkmac.Button(button_frame, text="No", font=('Helvetica', 58), bg='#ff4122', fg='white', command=lambda: self.handle_order_option(order_id, False, price))
         no_button.grid(row=1, column=1, padx=5)
 
         self.configureColWeights(self.right_container)
         return
     
-    def create_payment_buttons(self, order_id):
+    def create_payment_buttons(self, order_id, price):
         payment_frame = tk.Frame(self.right_container)
         payment_frame.grid(row=1, column=0, columnspan=2, padx=10, sticky=tk.NSEW)
 
         payment_label = tk.Label(self.right_container, text="How would you like to pay?", font=('Helvetica', 25, 'bold'), anchor='n')
         payment_label.grid(row=0, column=1, columnspan=1, sticky='w', pady=35)
 
-        cash_button = tkmac.Button(payment_frame, text="Cash", font=('Helvetica', 58), bg='green', fg='white', command=lambda: self.handle_payment_option(order_id, False))
+        cash_button = tkmac.Button(payment_frame, text="Cash", font=('Helvetica', 58), bg='green', fg='white', command=lambda: self.handle_payment_option(order_id, False, price))
         cash_button.grid(row=1, column=0, padx=5, pady=5)
 
-        card_button = tkmac.Button(payment_frame, text="Credit/Debit Card", font=('Helvetica', 58), bg='blue', fg='white', command=lambda: self.handle_payment_option(order_id, True))
+        card_button = tkmac.Button(payment_frame, text="Credit/Debit Card", font=('Helvetica', 58), bg='blue', fg='white', command=lambda: self.handle_payment_option(order_id, True, price))
         card_button.grid(row=1, column=1, padx=5, pady=5)
 
         payment_frame.grid_columnconfigure(0, weight=1)
@@ -179,29 +180,31 @@ class TabApp:
         # Create a container frame for the right side
         self.right_container = tk.Frame(self.content_frame)
         self.right_container.grid(row=0, column=1, sticky=tk.NSEW)
+        self.createOrderButton(order['id'], total_price)
 
         # Adjust column weights to occupy right half of the screen
         self.content_frame.grid_columnconfigure(0, weight=1)
         self.content_frame.grid_columnconfigure(1, weight=1)
 
-        self.createOrderButton(order['id'])
+        # self.createOrderButton(order['id'])
         self.root.title(f"Order {order['id']}")
 
-    def handle_order_option(self, order_id, is_correct):
+    def handle_order_option(self, order_id, is_correct, price):
         if is_correct:
             print(f'Order Number: {order_id} is correct!')
             self.correct_orders.append(order_id)
-            self.create_payment_buttons(order_id)
+            self.create_payment_buttons(order_id, price)
         else:
             print(f'ALERT: Order Number: {order_id} is wrong!')
             self.incorrect_orders.append(order_id)
-            self.create_payment_buttons(order_id)
+            self.create_payment_buttons(order_id, price)
 
-    def handle_payment_option(self, order_id, selected_card):
+    def handle_payment_option(self, order_id, selected_card, price):
         if selected_card:
-            print(f'Order {order_id} selected card!')
+            print(f'Order {order_id} selected to pay {price} with card!')
+            stripeApis.createPaymentIntent(price)
         else:
-            print(f'Order {order_id} selected cash!')
+            print(f'Order {order_id} selected to pay {price} with cash!')
         self.removeWidgets('right_container')
         self.show_thank_you_message()
         self.root.after(5000, self.close_current_order)
