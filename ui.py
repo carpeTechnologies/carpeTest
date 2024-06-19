@@ -202,7 +202,13 @@ class TabApp:
     def handle_payment_option(self, order_id, selected_card, price):
         if selected_card:
             print(f'Order {order_id} selected to pay {price} with card!')
-            stripeApis.createPaymentIntent(price)
+            intentId = stripeApis.createPaymentIntent(price)
+            processPaymentIntent = stripeApis.processPaymentIntent(intentId)
+            print(processPaymentIntent.last_response.code)
+            print(stripeApis.retrieveReader().last_response.code)
+            print(stripeApis.presentPayment().last_response.code)
+            print(stripeApis.retrievePaymentIntent(intentId).last_response.code)
+            print(stripeApis.retrieveReader().last_response.code)
         else:
             print(f'Order {order_id} selected to pay {price} with cash!')
         self.removeWidgets('right_container')
