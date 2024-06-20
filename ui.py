@@ -188,32 +188,50 @@ class TabApp:
 
         # self.createOrderButton(order['id'])
         self.root.title(f"Order {order['id']}")
+        self.root.update_idletasks()
 
     def handle_order_option(self, order_id, is_correct, price):
         if is_correct:
-            print(f'Order Number: {order_id} is correct!')
+            print(f'\n\nOrder Number: {order_id} is correct!')
             self.correct_orders.append(order_id)
             self.create_payment_buttons(order_id, price)
         else:
-            print(f'ALERT: Order Number: {order_id} is wrong!')
+            print(f'\nALERT: Order Number: {order_id} is wrong!\n')
             self.incorrect_orders.append(order_id)
-            self.create_payment_buttons(order_id, price)
+            self.show_thank_you_message()
+            self.root.after(5000, self.close_current_order)
 
     def handle_payment_option(self, order_id, selected_card, price):
+        ppiCode = None
+        rrCode = None
+        ppCode = None
+        rpiCode = None
         if selected_card:
-            print(f'Order {order_id} selected to pay {price} with card!')
+            print(f'\nOrder {order_id} selected to pay {price} with card!\n')
             intentId = stripeApis.createPaymentIntent(price)
             processPaymentIntent = stripeApis.processPaymentIntent(intentId)
-            print(processPaymentIntent.last_response.code)
-            print(stripeApis.retrieveReader().last_response.code)
-            print(stripeApis.presentPayment().last_response.code)
-            print(stripeApis.retrievePaymentIntent(intentId).last_response.code)
-            print(stripeApis.retrieveReader().last_response.code)
+            if processPaymentIntent.last_response.code == 200:
+                ppiCode = True
+                self.stripe200()
+            if stripeApis.retrieveReader().last_response.code == 200:
+                rrCode = True
+                self.stripe200()
+            if stripeApis.presentPayment().last_response.code == 200:
+                ppCode = True
+                self.stripe200()
+            if stripeApis.retrievePaymentIntent(intentId).last_response.code == 200:
+                rpiCode = True
+                self.stripe200()
+            if ppiCode == True and rrCode == True and ppCode == True and rpiCode == True:
+                print(f'Transaction completed, no errors\n\n')
         else:
-            print(f'Order {order_id} selected to pay {price} with cash!')
+            print(f'\nOrder {order_id} selected to pay {price} with cash!\n')
         self.removeWidgets('right_container')
         self.show_thank_you_message()
         self.root.after(5000, self.close_current_order)
+
+    def stripe200(self):
+        print(f'200 - No errors\n')
         
     def configureColWeights(self, frameName):
         frameName.grid_columnconfigure(0, weight=1)

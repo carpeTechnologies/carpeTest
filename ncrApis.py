@@ -194,7 +194,7 @@ def process_field_values(field_values):
 
 def autoGetOrders(getAllOrders, heads, tab_app):
     request = requests.get(getAllOrders, headers = heads)
-    print(f'Sent request at {strftime("%Y-%m-%d %H:%M:%S", gmtime())} GMT')
+    print(f'Got new orders at {strftime("%Y-%m-%d %H:%M:%S", gmtime())} GMT')
     response_data = json.loads(request.text)
     orders = response_data['orders']
     processed_orders = tab_app.getProcessedOrders()

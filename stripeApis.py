@@ -43,7 +43,7 @@ def createPaymentIntent(amt): # https://docs.stripe.com/terminal/quickstart
 
 def processPaymentIntent(id):
     stripe.api_key = stripeDirectKey()
-    print(f'Processing payment intent')
+    print(f'\nProcessing payment intent')
     return stripe.terminal.Reader.process_payment_intent(
         "tmr_Fm6YDQycNkDMvZ",
         payment_intent = id,
