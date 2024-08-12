@@ -465,6 +465,15 @@ button:hover {
   transition: all 0.3s ease-out;
 }
 
+.contactUs-container {
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  margin: auto;
+  padding-top: 100px;
+}
+
+
 /* ================================= 
   Helper class styles
 ==================================== */
@@ -477,14 +486,6 @@ button:hover {
 .disabled {
   cursor: not-allowed !important;
   background: rgba(197, 163, 175, 0.1) !important;
-}
-
-.contactUs-container {
-  position: relative;
-  width: 100%;
-  max-width: 800px;
-  margin: auto;
-  padding-top: 10px;
 }
 
 /* ================================= 
