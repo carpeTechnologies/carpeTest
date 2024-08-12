@@ -487,10 +487,18 @@ button:hover {
   header {
     text-align: left;
     padding: 25px 0;
+    position: fixed;
+    z-index: 1000; 
+    top: 0;
+    left: 0;
+    width: 100%;
   }
 
   .header-container {
     padding-left: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 
   form {
